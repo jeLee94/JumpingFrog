@@ -10,6 +10,10 @@ public class CharacterController : MonoBehaviour
     public GameObject[] panels;
     public string date;
     public int Coin;
+    public AudioSource jump;
+    public AudioSource apple;
+    //public AudioClip jumpingSound;
+    //public AudioClip DropSound;
 
     #region 싱글톤
     private static CharacterController Instance;
@@ -44,12 +48,14 @@ public class CharacterController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
+            jump.PlayOneShot(jump.clip);
             transform.Translate(Vector3.up * 0.6f);
             transform.Translate(Vector3.right * 0.8f);
 
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
+            jump.PlayOneShot(jump.clip);
             transform.Translate(Vector3.up * 0.6f);
             transform.Translate(Vector3.left * 0.8f);
         }
@@ -75,7 +81,7 @@ public class CharacterController : MonoBehaviour
                 sqlite.DatabaseInsert(sql); // 위에서 짠 SQL문을 디비에 쏴주는 함수 실행
 
                 //DB 최고점수 가져오기
-                sql = string.Format("SELECT MAX(Score) From Game ");
+                sql = string.Format("SELECT MAX(Score), SUM(Coin) From Game");
                 //sql = string.Format("SELECT MAX(Score), SUM(Coin) From Game ");
                 
 
@@ -83,12 +89,11 @@ public class CharacterController : MonoBehaviour
                 while (sqlite.dataReader.Read())                            // 쿼리로 돌아온 레코드 읽기
                 {
                     int maxScore = sqlite.dataReader.GetInt32(0);
-                    //int SumCoin = sqlite.dataReader.GetInt32(1);
+                    int SumCoin = sqlite.dataReader.GetInt32(1);
                     var MaxScore_Text = BackGroundScroll._Instance.BestScore;
-                    //var SumCoin_Text = BackGroundScroll._Instance.Coin_txt;
+                    var SumCoin_Text = BackGroundScroll._Instance.Coin_txt;
                     MaxScore_Text.text = maxScore.ToString();
-                    //SumCoin_Text.text = SumCoin.ToString();
-                    //print(BackGroundScroll._Instance.Coin_txt);
+                    SumCoin_Text.text = SumCoin.ToString();
                     //break; // 최고점수이므로 처음에 한 번만 레코드값을 가져오면 된다.
                 }
                 
@@ -114,7 +119,7 @@ public class CharacterController : MonoBehaviour
 
         if (collision.gameObject.tag == "Coin")
         {
-
+            apple.PlayOneShot(apple.clip);
             Destroy(BackGroundScroll._Instance.CoinParent.transform.GetChild(0).gameObject);
             Coin++;
         }

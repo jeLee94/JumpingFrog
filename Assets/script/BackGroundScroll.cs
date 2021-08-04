@@ -41,6 +41,7 @@ public class BackGroundScroll : MonoBehaviour
 
     private void Start()
     {
+        isAlive = true;
         isTrigger = false;
         idx = -1;
         gameScore = 0;
@@ -53,13 +54,11 @@ public class BackGroundScroll : MonoBehaviour
     private void Update()
     {
         Playtime = Time.time;
-        Coin = CharacterController._Instance.Coin;
-        Coin_txt.text = Coin.ToString();
+        //Coin = CharacterController._Instance.Coin;
+        //Coin_txt.text = Coin.ToString(); //이 코드 있으면 한 판에서 얻은 코인수로 덮어씌워짐
         //BonusScore.text = "Bonus  " + (Coin / 10).ToString("N0");
         //gameScore += (Coin/10);
         FinalScore.text = gameScore.ToString("N0");
-
-
 
         Frog_Data temp = new Frog_Data
         {
@@ -73,9 +72,11 @@ public class BackGroundScroll : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //충돌한 게임오브젝트가 Destroy면
+        print(collision.name);
         if (collision.gameObject.name == "Destroy")
         {
             //충돌한 게임오브젝트의 첫번째 자식 파괴
+            print("충돌함");
             Destroy(this.transform.GetChild(0).gameObject);
             idx--;
         }
@@ -93,8 +94,10 @@ public class BackGroundScroll : MonoBehaviour
                     isTrigger = true;
                     if (isTrigger)
                     {
-
-                        this.transform.position += moveDirection * moveSpeed * 2.7f * Time.deltaTime;
+                        for (int i = 0; i < this.transform.childCount ; i++)
+                        {
+                            this.transform.GetChild(i).position += moveDirection * moveSpeed * 2.7f * Time.deltaTime;
+                        }
                         CoinParent.gameObject.transform.position += moveDirection * moveSpeed * 2.7f * Time.deltaTime;
 
                         isTrigger = false;
